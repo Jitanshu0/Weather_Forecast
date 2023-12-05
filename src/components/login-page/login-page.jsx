@@ -8,7 +8,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   signInWithEmailAndPassword,
-  updateProfile,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { useEffect } from "react";
 
@@ -17,6 +17,8 @@ const Loginpage = ({ setIsLoggedIn }) => {
   const [name, setName] = useState(""); // Add state for the name field
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [forgotPassword, setForgotPassword] = useState(false); // State for forgot password
+
   //useEffect to check and set login status on component mount
   useEffect(() => {
     const storedLoginStatus = localStorage.getItem("isLoggedIn");
@@ -24,7 +26,7 @@ const Loginpage = ({ setIsLoggedIn }) => {
     if (storedLoginStatus === "true") {
       setIsLoggedIn(true);
     }
-  }, []);
+  }, [setIsLoggedIn]);
 
   const handleCancel = () => {
     if (name || email || password) {
@@ -44,26 +46,39 @@ const Loginpage = ({ setIsLoggedIn }) => {
       console.error(err);
     }
   };
+  const handleForgotPassword = async () => {
+    try {
+      // Send a password reset email
+      await sendPasswordResetEmail(auth, email);
+      alert("Password reset email sent. Please check your inbox.");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   const handleSubmit = async () => {
     if (action === "Sign Up") {
-      try {
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-        // Set display name for the user
-        await updateProfile(userCredential.user, { displayName: name });
-        localStorage.setItem("isLoggedIn", "true");
-      } catch (err) {
-        console.error(err);
-      }
+      // try {
+      await createUserWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          localStorage.setItem("isLoggedIn", "true");
+        })
+        .catch((error) => {
+          alert(error.message);
+          // console.log(error.message);
+        });
+      // Set display name for the user
+      // await updateProfile(userCredential.user, { displayName: name });
+      // console.log("I am from try");
+      // localStorage.setItem("isLoggedIn", "true");
+      // } catch (err) {
+      //   console.log("I am from err");
+      //   console.error(err.message);
+      // }
     } else {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          console.log(userCredential);
+          // console.log(userCredential);
           setIsLoggedIn(true);
           localStorage.setItem("isLoggedIn", "true");
         })
@@ -120,7 +135,29 @@ const Loginpage = ({ setIsLoggedIn }) => {
       </div>
       {action === "Sign Up" ? null : (
         <div className="forgot-password">
-          Lost Password? <span>Click Here! </span>
+          Lost Password?{" "}
+          <span onClick={() => setForgotPassword(true)}>Click Here!</span>
+        </div>
+      )}
+
+      {/* Conditionally render the password reset UI */}
+      {forgotPassword && (
+        <div className="forgot-password-container">
+          <div className="input">
+            <img src={email_icon} alt="" />
+            <input
+              type="email"
+              placeholder="Email ID"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <button className="reset-password" onClick={handleForgotPassword}>
+            Reset Password
+          </button>
+          <button className="cancel" onClick={() => setForgotPassword(false)}>
+            Cancel
+          </button>
         </div>
       )}
       <div className="submit-container">

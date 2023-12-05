@@ -123,3 +123,40 @@
     0 17px 50px 0 rgba(0, 0, 0, 0.19);
   background-color: #2d006b;
 }
+
+/* Add these styles to your login-page.css file or your styling solution */
+.forgot-password-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-top: 20px;
+  align-content: space-between;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.reset-password {
+  background-color: #4caf50;
+  color: white;
+  padding: 8px 15px; /* Smaller padding */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-right: 10px; /* Add margin to separate from the Cancel button */
+}
+
+.cancel {
+  background-color: #d9534f; /* Red color */
+  color: white;
+  padding: 8px 15px; /* Smaller padding */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.reset-password:hover,
+.cancel:hover {
+  background-color: #45a049; /* Hover color */
+}
